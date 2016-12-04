@@ -6,11 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 public class MainActivity extends AppCompatActivity {
     private ViewGroup mContentView;
     private int[] mBalloonColors = new int[3];
-    private int mNextColor;
+    private int mNextColor, mScreenWidth, mScreenHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +25,21 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setBackgroundDrawableResource(R.drawable.modern_background);
 
         mContentView = (ViewGroup) findViewById(R.id.activity_main);
+        setToFullScreen();
+
+        final ViewTreeObserver viewTreeObserver = mContentView.getViewTreeObserver();
+        if (viewTreeObserver.isAlive()) {
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    mContentView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    mScreenHeight = mContentView.getHeight();
+                    mScreenWidth = mContentView.getWidth();
+                }
+            });
+        }
+
+
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -37,9 +53,9 @@ public class MainActivity extends AppCompatActivity {
                 if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     Ballon b = new Ballon(MainActivity.this, mBalloonColors[mNextColor], 100);
                     b.setX(motionEvent.getX());
-                    b.setY(motionEvent.getY());
+                    b.setY(mScreenHeight);
                     mContentView.addView(b);
-
+                    b.releaseBalloon(mScreenHeight, 2000);
                     if (mNextColor + 1 == mBalloonColors.length) {
                         mNextColor = 0;
                     } else {
@@ -52,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setToLandscape() {
+    private void setToFullScreen() {
         ViewGroup fullScreen = (ViewGroup) findViewById(R.id.activity_main);
         fullScreen.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -66,6 +82,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        setToLandscape();
+        setToFullScreen();
     }
 }
