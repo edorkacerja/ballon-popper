@@ -1,16 +1,25 @@
 package com.example.acerpc.popballons;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 public class MainActivity extends AppCompatActivity {
     private ViewGroup mContentView;
+    private int[] mBalloonColors = new int[3];
+    private int mNextColor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mBalloonColors[0] = Color.argb(255, 255, 0, 0);
+        mBalloonColors[1] = Color.argb(255, 0, 255, 0);
+        mBalloonColors[2] = Color.argb(255, 0, 0, 255);
 
         getWindow().setBackgroundDrawableResource(R.drawable.modern_background);
 
@@ -19,6 +28,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+            }
+        });
+
+        mContentView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    Ballon b = new Ballon(MainActivity.this, mBalloonColors[mNextColor], 100);
+                    b.setX(motionEvent.getX());
+                    b.setY(motionEvent.getY());
+                    mContentView.addView(b);
+
+                    if (mNextColor + 1 == mBalloonColors.length) {
+                        mNextColor = 0;
+                    } else {
+                        mNextColor++;
+                    }
+
+                }
+                return false;
             }
         });
     }
@@ -32,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
-
 
 
     @Override
