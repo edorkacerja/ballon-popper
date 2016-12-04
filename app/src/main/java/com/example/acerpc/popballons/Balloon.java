@@ -86,6 +86,14 @@ public class Balloon extends ImageView implements Animator.AnimatorListener, Val
         return super.onTouchEvent(event);
     }
 
+    public void setPopped(boolean popped) {
+        mPopped = popped;
+        if (mPopped) {
+            mAnimator.cancel();
+        }
+
+    }
+
     public interface BalloonListener {
         void popBalloon(Balloon balloon, boolean usertouch);
     }

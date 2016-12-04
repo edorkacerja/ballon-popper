@@ -7,23 +7,31 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements Balloon.BalloonListener{
-    private ViewGroup mContentView;
-    private int[] mBalloonColors = new int[3];
-    private int mNextColor, mScreenWidth, mScreenHeight;
+public class MainActivity extends AppCompatActivity implements Balloon.BalloonListener {
     public static final String TAG = "edor";
     public static final int MIN_ANIMATION_DELAY = 500;
     public static final int MAX_ANIMATION_DELAY = 1500;
     public static final int MIN_ANIMATION_DURATION = 1000;
     public static final int MAX_ANIMATION_DURATION = 8000;
-    private int mLevel;
-    private int mScore;
+    public static final int NUMBER_OF_PINS = 5;
+    public static int mPinsUsed = 0;
+
+    private ViewGroup mContentView;
+    private int[] mBalloonColors = new int[3];
+    private int mNextColor, mScreenWidth, mScreenHeight;
+    private int mLevel, mScore;
     private TextView mScoreDisplay, mLevelDisplay;
+    private List<ImageView> mPinImages = new ArrayList<>();
+    private List<Balloon> mBalloons = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +47,7 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
         mContentView = (ViewGroup) findViewById(R.id.activity_main);
         setToFullScreen();
 
-        mScoreDisplay = (TextView) findViewById(R.id.score_display);
-        mLevelDisplay = (TextView) findViewById(R.id.level_display);
-
-        final ViewTreeObserver viewTreeObserver = mContentView.getViewTreeObserver();
+        ViewTreeObserver viewTreeObserver = mContentView.getViewTreeObserver();
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -53,6 +58,14 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
                 }
             });
         }
+
+        mScoreDisplay = (TextView) findViewById(R.id.score_display);
+        mLevelDisplay = (TextView) findViewById(R.id.level_display);
+        mPinImages.add((ImageView) findViewById(R.id.pushpin1));
+        mPinImages.add((ImageView) findViewById(R.id.pushpin2));
+        mPinImages.add((ImageView) findViewById(R.id.pushpin3));
+        mPinImages.add((ImageView) findViewById(R.id.pushpin4));
+        mPinImages.add((ImageView) findViewById(R.id.pushpin5));
 
 
         updateDisplay();
@@ -89,13 +102,36 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
     @Override
     public void popBalloon(Balloon balloon, boolean usertouch) {
         mContentView.removeView(balloon);
+        mBalloons.remove(balloon);
+
         if (usertouch) {
             mScore++;
         } else {
-
+            mPinsUsed++;
+            if (mPinsUsed <= mPinImages.size()) {
+                mPinImages.get(mPinsUsed - 1).setImageResource(R.drawable.pin_off);
+            }
+            if (mPinsUsed == NUMBER_OF_PINS) {
+                gameOver(true);
+                return;
+            } else {
+                Toast.makeText(this, "Missed that one", Toast.LENGTH_SHORT).show();
+            }
         }
 
         updateDisplay();
+    }
+
+    private void gameOver(boolean b) {
+        Toast.makeText(this, "Game Over! ", Toast.LENGTH_SHORT).show();
+
+        for (Balloon balloon : mBalloons) {
+            mContentView.removeView(balloon);
+            balloon.setPopped(true);
+        }
+
+        mBalloons.clear();
+
     }
 
     private void updateDisplay() {
@@ -152,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
     private void launchBalloon(int x) {
 
         Balloon balloon = new Balloon(this, mBalloonColors[mNextColor], 150);
-
+        mBalloons.add(balloon);
         if (mNextColor + 1 == mBalloonColors.length) {
             mNextColor = 0;
         } else {
