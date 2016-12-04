@@ -13,14 +13,14 @@ import com.example.acerpc.popballons.util.PixelHelper;
  * Created by AcerPC on 12/4/2016.
  */
 
-public class Ballon extends ImageView implements Animator.AnimatorListener, ValueAnimator.AnimatorUpdateListener {
+public class Balloon extends ImageView implements Animator.AnimatorListener, ValueAnimator.AnimatorUpdateListener {
     private ValueAnimator mAnimator;
 
-    public Ballon(Context context) {
+    public Balloon(Context context) {
         super(context);
     }
 
-    public Ballon(Context context, int color, int rawHeight) {
+    public Balloon(Context context, int color, int rawHeight) {
         super(context);
 
         this.setImageResource(R.drawable.balloon);
