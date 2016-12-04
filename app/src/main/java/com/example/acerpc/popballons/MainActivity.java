@@ -12,6 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.acerpc.popballons.util.HighScoreHelper;
+import com.example.acerpc.popballons.util.SimpleAlertDialog;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
     private boolean mPlaying;
     private boolean mGameStopped = true;
     private int mBalloonsPopped;
-    private static final int BALLOONS_PER_LEVEL = 3;
+    private static final int BALLOONS_PER_LEVEL = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
         updateDisplay();
     }
 
-    private void gameOver(boolean b) {
+    private void gameOver(boolean allPinsUsed) {
         Toast.makeText(this, "Game Over! ", Toast.LENGTH_SHORT).show();
 
         for (Balloon balloon : mBalloons) {
@@ -172,6 +175,15 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
         mPlaying = false;
         mGoButton.setText("Start game");
         mGameStopped = true;
+
+        if (allPinsUsed) {
+            if (HighScoreHelper.isTopScore(this, mScore)) {
+                HighScoreHelper.setTopScore(this, mScore);
+                SimpleAlertDialog dialog = SimpleAlertDialog.newInstance("New High Score!!!",
+                        String.format("Your new high score is %d", mScore));
+                dialog.show(getSupportFragmentManager(), null);
+            }
+        }
     }
 
     private void updateDisplay() {
