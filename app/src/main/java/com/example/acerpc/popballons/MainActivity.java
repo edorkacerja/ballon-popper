@@ -4,10 +4,10 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.TextView;
 
 import java.util.Date;
 import java.util.Random;
@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
     public static final int MAX_ANIMATION_DURATION = 8000;
     private int mLevel;
     private int mScore;
+    private TextView mScoreDisplay, mLevelDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,9 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
         mContentView = (ViewGroup) findViewById(R.id.activity_main);
         setToFullScreen();
 
+        mScoreDisplay = (TextView) findViewById(R.id.score_display);
+        mLevelDisplay = (TextView) findViewById(R.id.level_display);
+
         final ViewTreeObserver viewTreeObserver = mContentView.getViewTreeObserver();
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -51,8 +55,7 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
         }
 
 
-        Log.d(TAG, "onCreate: screen height" + mScreenHeight);
-
+        updateDisplay();
     }
 
     private void setToFullScreen() {
@@ -74,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
 
     private void startLevel() {
         mLevel++;
+        updateDisplay();
         BalloonLauncher launcher = new BalloonLauncher();
         launcher.execute(mLevel);
     }
@@ -95,7 +99,8 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
     }
 
     private void updateDisplay() {
-        //// TODO: 12/4/2016  create method
+        mLevelDisplay.setText(String.valueOf(mLevel));
+        mScoreDisplay.setText(String.valueOf(mScore));
     }
 
 
