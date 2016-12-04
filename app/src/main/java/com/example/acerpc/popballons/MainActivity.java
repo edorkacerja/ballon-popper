@@ -12,7 +12,7 @@ import android.view.ViewTreeObserver;
 import java.util.Date;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Balloon.BalloonListener{
     private ViewGroup mContentView;
     private int[] mBalloonColors = new int[3];
     private int mNextColor, mScreenWidth, mScreenHeight;
@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int MIN_ANIMATION_DURATION = 1000;
     public static final int MAX_ANIMATION_DURATION = 8000;
     private int mLevel;
+    private int mScore;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +80,22 @@ public class MainActivity extends AppCompatActivity {
 
     public void goButtonClickHandler(View view) {
         startLevel();
+    }
+
+    @Override
+    public void popBalloon(Balloon balloon, boolean usertouch) {
+        mContentView.removeView(balloon);
+        if (usertouch) {
+            mScore++;
+        } else {
+
+        }
+
+        updateDisplay();
+    }
+
+    private void updateDisplay() {
+        //// TODO: 12/4/2016  create method
     }
 
 
