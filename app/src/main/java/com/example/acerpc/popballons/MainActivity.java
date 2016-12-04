@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.acerpc.popballons.util.HighScoreHelper;
 import com.example.acerpc.popballons.util.SimpleAlertDialog;
+import com.example.acerpc.popballons.util.SoundHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
     public static final int MIN_ANIMATION_DURATION = 1000;
     public static final int MAX_ANIMATION_DURATION = 8000;
     public static final int NUMBER_OF_PINS = 5;
+    private static final int BALLOONS_PER_LEVEL = 10;
     public static int mPinsUsed = 0;
 
     private ViewGroup mContentView;
@@ -40,7 +42,8 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
     private boolean mPlaying;
     private boolean mGameStopped = true;
     private int mBalloonsPopped;
-    private static final int BALLOONS_PER_LEVEL = 10;
+    private SoundHelper mSoundHelper;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
         mGoButton = (Button) findViewById(R.id.go_button);
 
         updateDisplay();
+        mSoundHelper = new SoundHelper(this);
+        mSoundHelper.prepareMusicPlayer(this);
     }
 
     private void setToFullScreen() {
@@ -107,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
         }
         mGameStopped = false;
         startLevel();
+        mSoundHelper.playMusic();
     }
 
     private void startLevel() {
@@ -138,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
     @Override
     public void popBalloon(Balloon balloon, boolean usertouch) {
         mBalloonsPopped++;
-
+        mSoundHelper.playSound();
         mContentView.removeView(balloon);
         mBalloons.remove(balloon);
 
@@ -184,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements Balloon.BalloonLi
                 dialog.show(getSupportFragmentManager(), null);
             }
         }
+        mSoundHelper.pauseMusic();
     }
 
     private void updateDisplay() {
